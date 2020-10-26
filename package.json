@@ -2,11 +2,18 @@
   "name": "alter",
   "version": "0.0.1",
   "description": "Alter provides real-time image manipulation for responsive images",
-  "main": "index.js",
+  "main": "src/app.js",
   "repository": "git@github.com:khan-ajamal/alter.git",
   "author": "Ajamal Khan <ajamalkhan65@gmail.com>",
   "license": "Apache-2.0",
   "private": false,
+  "engines": {
+    "node": "v12.19.0"
+  },
+  "scripts": {
+    "start": "nodemon",
+    "inspect": "nodemon --inspect src/app.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "sharp": "^0.26.2"
@@ -17,6 +24,7 @@
     "eslint-config-prettier": "^6.14.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "nodemon": "^2.0.6",
     "prettier": "^2.1.2"
   }
 }
