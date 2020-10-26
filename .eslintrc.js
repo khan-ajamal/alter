@@ -1,6 +1,5 @@
 module.exports = {
   env: {
-    commonjs: true,
     es2021: true,
     node: true,
   },
@@ -8,6 +7,7 @@ module.exports = {
   plugins: ['prettier'],
   parserOptions: {
     ecmaVersion: 12,
+    sourceType: 'module',
   },
   rules: {
     'prettier/prettier': ['error'],

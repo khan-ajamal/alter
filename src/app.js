@@ -1,13 +1,25 @@
-const express = require('express');
+import express from 'express';
 
-const app = express();
+import config from './config';
+import Logger from './config/logger';
+import routes from './routes';
 
-const port = 3000;
+const startServer = () => {
+  const app = express();
+  app.enable('trust proxy');
+  app.use(config.api.prefix, routes());
+  app
+    .listen(config.port, () => {
+      Logger.info(`
+    ################################################
+      🛡️  Server listening on port: ${config.port} 🛡️
+    ################################################
+    `);
+    })
+    .on('error', (err) => {
+      Logger.error(err);
+      process.exit(1);
+    });
+};
 
-app.get('/', (req, res) => {
-  res.send('hello, world!');
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+startServer();
