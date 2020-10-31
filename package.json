@@ -8,13 +8,14 @@
   "license": "Apache-2.0",
   "private": false,
   "engines": {
-    "node": "v12.19.0"
+    "node": "v14.15.0"
   },
   "scripts": {
     "start": "nodemon",
     "inspect": "nodemon --inspect src/app.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.783.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.20",
