@@ -1,7 +1,16 @@
-const { trim, split, forEach } = require('lodash');
+const { trim, split, forEach, isEmpty } = require('lodash');
 const sharp = require('sharp');
 
 const s3Image = require('./aws');
+const { parseType } = require('./utils');
+
+const TRANSFORMATIONS = {
+  w: 'width',
+  h: 'height',
+  f: 'format',
+  q: 'quality',
+  b: 'blur',
+};
 
 class ImageProcessing {
   /**
@@ -22,17 +31,47 @@ class ImageProcessing {
     const transformations = {};
     forEach(transforms, (transform) => {
       const [property, value] = split(trim(transform), '_');
-      transformations[property] = parseInt(value, 10);
+      transformations[TRANSFORMATIONS[property]] = parseType(value);
     });
     this.transformations = transformations;
   }
 
   transform(transformations) {
     this.getTransformations(transformations);
-    return s3Image(this.s3Config)
-      .pipe(this.sharp)
-      .resize({ width: this.transformations.w })
-      .toBuffer({ resolveWithObject: true });
+
+    let image = s3Image(this.s3Config).pipe(this.sharp);
+
+    const resize = {};
+    const formatOptions = { quality: 85 };
+    let format = 'jpeg';
+
+    forEach(this.transformations, (value, index) => {
+      switch (index) {
+        case 'width':
+          resize.width = value;
+          break;
+        case 'height':
+          resize.height = value;
+          break;
+        case 'format':
+          format = value;
+          break;
+        case 'quality':
+          formatOptions.quality = value;
+          break;
+        case 'blur':
+          formatOptions.quality = 1;
+          break;
+        default:
+          break;
+      }
+    });
+
+    image = image.toFormat(format, formatOptions);
+    if (!isEmpty(resize)) {
+      image = image.resize(resize);
+    }
+    return image.toBuffer({ resolveWithObject: true });
   }
 }
 
