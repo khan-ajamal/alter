@@ -1,6 +1,8 @@
 const { trim, split, forEach } = require('lodash');
 const sharp = require('sharp');
 
+const s3Image = require('./aws');
+
 class ImageProcessing {
   /**
    * ImageProcessing is a class which loads image and perform transformation on it using sharp package
@@ -10,23 +12,27 @@ class ImageProcessing {
   constructor(imagePath, s3Config = {}) {
     this.s3Config = s3Config;
     this.path = imagePath;
-    this.transformations = this.getTransformations();
+    this.sharp = sharp({
+      failOnError: false,
+    });
   }
 
-  getTransformations() {
-    const transforms = split(trim(this.transformString), ',');
+  getTransformations(mod) {
+    const transforms = split(trim(mod), ',');
     const transformations = {};
     forEach(transforms, (transform) => {
       const [property, value] = split(trim(transform), '_');
-      transformations[property] = value;
+      transformations[property] = parseInt(value, 10);
     });
-    return transformations;
+    this.transformations = transformations;
   }
 
-  loadImage() {
-    // is it a http url or s3 or local file
-    console.log(this.path, this.s3Config);
-    return sharp();
+  transform(transformations) {
+    this.getTransformations(transformations);
+    return s3Image(this.s3Config)
+      .pipe(this.sharp)
+      .resize({ width: this.transformations.w })
+      .toBuffer({ resolveWithObject: true });
   }
 }
 
