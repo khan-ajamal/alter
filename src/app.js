@@ -7,6 +7,13 @@ const ImageProcessing = require('./transformer');
 const app = express();
 app.use(cors());
 
+app.get('/*', (req, res, next) => {
+  const period = 60 * 60 * 24 * 365;
+  res.setHeader('Last-Modified', new Date().toUTCString());
+  res.setHeader('Cache-control', `public, max-age=${period}`);
+  next();
+});
+
 app.get('/:transformations/:path([\\w\\./]+)', (req, res) => {
   const image = new ImageProcessing(req.params.path, {
     Bucket: config.aws.bucket,
