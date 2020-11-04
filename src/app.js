@@ -1,9 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 
 const config = require('./config');
 const ImageProcessing = require('./transformer');
 
 const app = express();
+app.use(cors());
 
 app.get('/:transformations/:path([\\w\\./]+)', (req, res) => {
   const image = new ImageProcessing(req.params.path, {
